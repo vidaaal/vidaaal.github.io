@@ -1,280 +1,1217 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <title>SQL Builder PRO MAX</title>
-
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #020617;
+  --surface: #0f172a;
+  --surface2: #1e293b;
+  --border: #334155;
+  --accent: #38bdf8;
+  --accent2: #6366f1;
+  --green: #22c55e;
+  --red: #f87171;
+  --amber: #fbbf24;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #020617;
-  color: #e2e8f0;
-  padding: 30px;
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 0;
 }
 
-h1 {
-  color: #38bdf8;
-}
-
-input, select, textarea {
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  background: #0f172a;
-  color: white;
-}
-
-button {
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(135deg, #38bdf8, #6366f1);
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-.column {
-  background: #0f172a;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 12px;
-  transition: 0.2s;
-}
-
-.column:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0 15px rgba(56,189,248,0.2);
-}
-
-.hint {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 5px;
-  opacity: 0;
-  transition: 0.3s;
-}
-
-.column:hover .hint {
-  opacity: 1;
-}
-
-textarea {
-  width: 100%;
-  height: 140px;
-  margin-top: 20px;
-  border-radius: 10px;
-  padding: 10px;
-  background: #0f172a;
-  color: #22c55e;
-}
-
-/* GUIDE */
-.guide-container {
-  margin-top: 40px;
-}
-
-.tabs {
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 30px;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo h1 {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logo span {
+  background: var(--accent);
+  color: #000;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+}
+
+.dialect-selector {
+  display: flex;
+  gap: 6px;
+}
+
+.dialect-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.dialect-btn.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* MAIN LAYOUT */
+.main {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 0;
+  height: calc(100vh - 70px);
+}
+
+/* LEFT PANEL */
+.left-panel {
+  padding: 24px;
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+}
+
+/* TABLE CONFIG */
+.table-config {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.tab {
+.table-config label {
+  font-size: 12px;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.table-config-group {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="text"], select {
   padding: 8px 12px;
-  background: #0f172a;
-  border-radius: 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus, select:focus {
+  border-color: var(--accent);
+}
+
+/* TEMPLATES */
+.templates {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.template-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'Syne', sans-serif;
+  transition: all 0.2s;
+}
+
+.template-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* COLUMNS GRID HEADER */
+.grid-header {
+  display: grid;
+  grid-template-columns: 140px 130px 60px 60px 60px 60px 90px 36px;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border-radius: 8px 8px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* COLUMNS */
+#columns {
+  border: 1px solid var(--border);
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+
+.column-row {
+  display: grid;
+  grid-template-columns: 140px 130px 60px 60px 60px 60px 90px 36px;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  transition: background 0.15s;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.column-row:last-child { border-bottom: none; }
+.column-row:hover { background: var(--surface2); }
+
+.column-row input[type="text"] {
+  width: 100%;
+  padding: 6px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.column-row select {
+  width: 100%;
+  padding: 6px 4px;
+  font-size: 12px;
+}
+
+.col-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
   cursor: pointer;
 }
 
-.tab.active {
-  background: #38bdf8;
-  color: black;
+.default-input {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
 }
 
-.content {
-  background: #0f172a;
-  padding: 15px;
-  border-radius: 10px;
-  display: none;
-  margin-top: 10px;
-}
-
-.content.active {
-  display: block;
-}
-
-pre {
-  background: #020617;
-  padding: 10px;
+.del-btn {
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.del-btn:hover {
+  background: rgba(248, 113, 113, 0.15);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* FK SECTION */
+.fk-section {
+  margin-top: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.fk-section h3 {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.fk-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 36px;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+  animation: slideIn 0.2s ease;
+}
+
+.fk-row select, .fk-row input { font-size: 12px; }
+
+/* ACTION BUTTONS */
+.action-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #000;
+}
+
+.btn-primary:hover { transform: translateY(-1px); opacity: 0.9; }
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover { color: var(--text); border-color: var(--text); }
+
+/* RIGHT PANEL */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.output-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.output-header h2 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.output-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.output-tab {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Syne', sans-serif;
+  transition: all 0.2s;
+}
+
+.output-tab.active {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+/* SQL OUTPUT */
+.sql-output {
+  flex: 1;
+  padding: 16px 20px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre;
   overflow-x: auto;
 }
+
+.sql-keyword { color: #818cf8; font-weight: 600; }
+.sql-table { color: #38bdf8; }
+.sql-col { color: #e2e8f0; }
+.sql-type { color: #fbbf24; }
+.sql-constraint { color: #f472b6; }
+.sql-value { color: #22c55e; }
+.sql-comment { color: #475569; font-style: italic; }
+.sql-string { color: #a3e635; }
+.sql-number { color: #fb923c; }
+
+.copy-bar {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+
+/* INSERT VALUES SECTION */
+.insert-values {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  display: none;
+}
+
+.insert-values.active { display: block; }
+
+.insert-values h3 {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.insert-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.insert-field label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  min-width: 120px;
+}
+
+.insert-field input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.insert-field .type-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--amber);
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+/* GUIDE */
+.guide-section {
+  margin-top: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.guide-tabs {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.guide-tab {
+  padding: 10px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Syne', sans-serif;
+  white-space: nowrap;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.guide-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.guide-content {
+  padding: 16px;
+  display: none;
+  font-size: 13px;
+  line-height: 2;
+}
+
+.guide-content.active { display: block; }
+
+.guide-content code {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  background: var(--surface2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* VALIDATION */
+.validation-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.validation-msg {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.validation-msg.warn {
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--amber);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.validation-msg.ok {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--green);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--green);
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.toast.show { opacity: 1; transform: translateY(0); }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
 </head>
-
 <body>
 
-<h1>🔥 SQL Builder PRO MAX</h1>
-
-<input type="text" id="tableName" placeholder="Nome da tabela">
-
-<div id="columns"></div>
-
-<button onclick="addColumn()">+ Coluna</button>
-<button onclick="generateSQL()">Gerar SQL</button>
-
-<textarea id="output" placeholder="Seu SQL aparece aqui..."></textarea>
-
-<!-- GUIA -->
-<div class="guide-container">
-
-<div class="tabs">
-  <div class="tab active" onclick="showTab(0)">Base</div>
-  <div class="tab" onclick="showTab(1)">Dados</div>
-  <div class="tab" onclick="showTab(2)">Filtros</div>
-  <div class="tab" onclick="showTab(3)">Relacionamentos</div>
-  <div class="tab" onclick="showTab(4)">Tipos</div>
-  <div class="tab" onclick="showTab(5)">Funções</div>
+<div class="header">
+  <div class="logo">
+    <h1>⚡ SQL Builder PRO MAX</h1>
+    <span>2026</span>
+  </div>
+  <div class="dialect-selector">
+    <button class="dialect-btn active" onclick="setDialect('mysql', this)">MySQL</button>
+    <button class="dialect-btn" onclick="setDialect('postgres', this)">PostgreSQL</button>
+    <button class="dialect-btn" onclick="setDialect('sqlite', this)">SQLite</button>
+    <button class="dialect-btn" onclick="setDialect('sqlserver', this)">SQL Server</button>
+  </div>
 </div>
 
-<div class="content active">
-<h3>Base</h3>
-CREATE DATABASE → cria banco<br>
-CREATE TABLE → cria tabela<br>
-USE → seleciona banco<br>
-💡 Use no início
+<div class="main">
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+
+    <!-- TABLE CONFIG -->
+    <div class="table-config">
+      <div class="table-config-group">
+        <label>Nome da tabela</label>
+        <input type="text" id="tableName" placeholder="ex: pedidos" oninput="autoGenerate()">
+      </div>
+      <div class="table-config-group">
+        <label>Engine</label>
+        <select id="tableEngine" onchange="autoGenerate()" class="mysql-only">
+          <option>InnoDB</option>
+          <option>MyISAM</option>
+          <option>MEMORY</option>
+        </select>
+      </div>
+      <div class="table-config-group">
+        <label>Charset</label>
+        <select id="tableCharset" onchange="autoGenerate()" class="mysql-only">
+          <option>utf8mb4</option>
+          <option>utf8</option>
+          <option>latin1</option>
+        </select>
+      </div>
+      <div class="table-config-group">
+        <label>Comentário da tabela</label>
+        <input type="text" id="tableComment" placeholder="Opcional" oninput="autoGenerate()">
+      </div>
+    </div>
+
+    <!-- TEMPLATES -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:12px; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Templates rápidos</div>
+      <div class="templates">
+        <button class="template-btn" onclick="loadTemplate('usuario')">👤 Usuário</button>
+        <button class="template-btn" onclick="loadTemplate('produto')">📦 Produto</button>
+        <button class="template-btn" onclick="loadTemplate('pedido')">🛒 Pedido</button>
+        <button class="template-btn" onclick="loadTemplate('categoria')">🏷️ Categoria</button>
+        <button class="template-btn" onclick="loadTemplate('endereco')">📍 Endereço</button>
+        <button class="template-btn" onclick="loadTemplate('log')">📋 Log</button>
+      </div>
+    </div>
+
+    <!-- GRID HEADER -->
+    <div class="grid-header">
+      <span>Nome</span>
+      <span>Tipo</span>
+      <span style="text-align:center">PK</span>
+      <span style="text-align:center">AI</span>
+      <span style="text-align:center">NN</span>
+      <span style="text-align:center">UQ</span>
+      <span>Default</span>
+      <span></span>
+    </div>
+
+    <!-- COLUMNS -->
+    <div id="columns"></div>
+
+    <!-- FK SECTION -->
+    <div class="fk-section" id="fkSection">
+      <h3>🔗 Foreign Keys</h3>
+      <div id="fkRows"></div>
+      <button class="btn btn-ghost" onclick="addFK()" style="font-size:12px; padding:6px 12px; margin-top:4px;">+ Adicionar FK</button>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-bar">
+      <button class="btn btn-secondary" onclick="addColumn()">+ Coluna</button>
+      <button class="btn btn-primary" onclick="generateSQL()">⚡ Gerar SQL</button>
+    </div>
+
+    <!-- VALIDATION -->
+    <div class="validation-bar" id="validationBar"></div>
+
+    <!-- GUIDE -->
+    <div class="guide-section">
+      <div class="guide-tabs">
+        <button class="guide-tab active" onclick="showGuide(0,this)">Base</button>
+        <button class="guide-tab" onclick="showGuide(1,this)">Dados</button>
+        <button class="guide-tab" onclick="showGuide(2,this)">Filtros</button>
+        <button class="guide-tab" onclick="showGuide(3,this)">Joins</button>
+        <button class="guide-tab" onclick="showGuide(4,this)">Tipos</button>
+        <button class="guide-tab" onclick="showGuide(5,this)">Funções</button>
+      </div>
+      <div class="guide-content active"><code>CREATE DATABASE</code> cria banco &nbsp;|&nbsp; <code>CREATE TABLE</code> cria tabela &nbsp;|&nbsp; <code>USE banco</code> seleciona o banco</div>
+      <div class="guide-content"><code>INSERT INTO</code> inserir &nbsp;|&nbsp; <code>SELECT</code> buscar &nbsp;|&nbsp; <code>UPDATE</code> atualizar &nbsp;|&nbsp; <code>DELETE</code> deletar</div>
+      <div class="guide-content"><code>WHERE</code> condição &nbsp;|&nbsp; <code>ORDER BY</code> ordenar &nbsp;|&nbsp; <code>LIMIT</code> limitar &nbsp;|&nbsp; <code>LIKE '%valor%'</code> busca texto</div>
+      <div class="guide-content"><code>PRIMARY KEY</code> ID único &nbsp;|&nbsp; <code>FOREIGN KEY</code> ligação entre tabelas &nbsp;|&nbsp; <code>JOIN</code> une tabelas &nbsp;|&nbsp; <code>ON DELETE CASCADE</code> apaga em cascata</div>
+      <div class="guide-content"><code>INT</code> inteiro &nbsp;|&nbsp; <code>VARCHAR(n)</code> texto curto &nbsp;|&nbsp; <code>TEXT</code> texto longo &nbsp;|&nbsp; <code>DECIMAL(10,2)</code> dinheiro &nbsp;|&nbsp; <code>BOOLEAN</code> true/false &nbsp;|&nbsp; <code>DATE</code> data &nbsp;|&nbsp; <code>DATETIME</code> data+hora</div>
+      <div class="guide-content"><code>COUNT()</code> contar &nbsp;|&nbsp; <code>AVG()</code> média &nbsp;|&nbsp; <code>SUM()</code> soma &nbsp;|&nbsp; <code>MAX()</code> maior &nbsp;|&nbsp; <code>MIN()</code> menor &nbsp;|&nbsp; <code>GROUP BY</code> agrupar</div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="output-header">
+      <h2>SQL Gerado</h2>
+      <div class="output-tabs">
+        <button class="output-tab active" onclick="switchOutput('create', this)">CREATE</button>
+        <button class="output-tab" onclick="switchOutput('insert', this)">INSERT</button>
+        <button class="output-tab" onclick="switchOutput('select', this)">SELECT</button>
+      </div>
+    </div>
+
+    <div id="sqlOutput" class="sql-output"><span style="color:var(--muted); font-style:italic">-- Configure suas colunas e clique em "Gerar SQL"</span></div>
+
+    <!-- INSERT VALUES INPUT -->
+    <div class="insert-values" id="insertValuesPanel">
+      <h3>Valores para INSERT</h3>
+      <div id="insertFields"></div>
+    </div>
+
+    <div class="copy-bar">
+      <button class="btn btn-primary" onclick="copySQL()">📋 Copiar SQL</button>
+      <button class="btn btn-secondary" onclick="downloadSQL()">⬇️ Baixar .sql</button>
+    </div>
+  </div>
 </div>
 
-<div class="content">
-<h3>Dados</h3>
-INSERT INTO → inserir<br>
-SELECT → buscar<br>
-UPDATE → atualizar<br>
-DELETE → deletar<br>
-⚠ cuidado sem WHERE
-</div>
-
-<div class="content">
-<h3>Filtros</h3>
-WHERE → condição<br>
-ORDER BY → ordenar<br>
-ASC/DESC → ordem<br>
-LIMIT → limite<br>
-LIKE → busca texto
-</div>
-
-<div class="content">
-<h3>Relacionamentos</h3>
-PRIMARY KEY → ID único<br>
-FOREIGN KEY → ligação<br>
-JOIN → juntar tabelas
-</div>
-
-<div class="content">
-<h3>Tipos</h3>
-INT → número<br>
-VARCHAR → texto curto<br>
-DECIMAL → dinheiro<br>
-BOOLEAN → true/false<br>
-DATE → data
-</div>
-
-<div class="content">
-<h3>Funções</h3>
-COUNT() → contar<br>
-AVG() → média<br>
-SUM() → soma<br>
-MAX() → maior<br>
-MIN() → menor
-</div>
-
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
+let dialect = 'mysql';
+let currentOutput = 'create';
+let colCount = 0;
 
-const tips = {
-  "INT": "Número inteiro (ID, quantidade)",
-  "VARCHAR(100)": "Texto curto (nome, email)",
-  "DECIMAL(10,2)": "Dinheiro (valores exatos)",
-  "TEXT": "Texto grande",
-  "DATE": "Datas",
-  "BOOLEAN": "Verdadeiro ou falso"
+const typesByDialect = {
+  mysql:     ['INT','BIGINT','VARCHAR(100)','CHAR(1)','TEXT','LONGTEXT','DECIMAL(10,2)','FLOAT','DOUBLE','BOOLEAN','TINYINT(1)','DATE','DATETIME','TIMESTAMP','JSON'],
+  postgres:  ['INTEGER','BIGINT','VARCHAR(100)','CHAR(1)','TEXT','NUMERIC(10,2)','FLOAT','DOUBLE PRECISION','BOOLEAN','DATE','TIMESTAMP','TIMESTAMPTZ','JSONB','UUID','SERIAL','BIGSERIAL'],
+  sqlite:    ['INTEGER','TEXT','REAL','NUMERIC','BLOB'],
+  sqlserver: ['INT','BIGINT','NVARCHAR(100)','CHAR(1)','NTEXT','DECIMAL(10,2)','FLOAT','BIT','DATE','DATETIME','DATETIME2','UNIQUEIDENTIFIER']
 };
 
-function addColumn() {
+const smartTypes = {
+  id: 'INT', id_: 'INT', _id: 'INT',
+  nome: 'VARCHAR(100)', name: 'VARCHAR(100)',
+  email: 'VARCHAR(255)', mail: 'VARCHAR(255)',
+  senha: 'VARCHAR(255)', password: 'VARCHAR(255)', hash: 'VARCHAR(255)',
+  telefone: 'VARCHAR(20)', phone: 'VARCHAR(20)', celular: 'VARCHAR(20)',
+  preco: 'DECIMAL(10,2)', valor: 'DECIMAL(10,2)', price: 'DECIMAL(10,2)', custo: 'DECIMAL(10,2)',
+  descricao: 'TEXT', description: 'TEXT', obs: 'TEXT', observacao: 'TEXT',
+  ativo: 'BOOLEAN', active: 'BOOLEAN', status_bool: 'BOOLEAN',
+  data: 'DATE', date: 'DATE', nascimento: 'DATE',
+  criado: 'DATETIME', created: 'DATETIME', atualizado: 'DATETIME', updated: 'DATETIME',
+  quantidade: 'INT', qty: 'INT', estoque: 'INT',
+  cep: 'CHAR(8)', cpf: 'CHAR(11)', cnpj: 'CHAR(14)',
+  slug: 'VARCHAR(200)', url: 'VARCHAR(500)',
+  imagem: 'VARCHAR(500)', foto: 'VARCHAR(500)', avatar: 'VARCHAR(500)',
+};
+
+const templates = {
+  usuario: {
+    name: 'usuarios',
+    cols: [
+      { name:'id', type:'INT', pk:true, ai:true, nn:false, uq:false, def:'' },
+      { name:'nome', type:'VARCHAR(100)', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'email', type:'VARCHAR(255)', pk:false, ai:false, nn:true, uq:true, def:'' },
+      { name:'senha', type:'VARCHAR(255)', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'ativo', type:'BOOLEAN', pk:false, ai:false, nn:true, uq:false, def:'true' },
+      { name:'criado_em', type:'DATETIME', pk:false, ai:false, nn:true, uq:false, def:'CURRENT_TIMESTAMP' },
+    ]
+  },
+  produto: {
+    name: 'produtos',
+    cols: [
+      { name:'id', type:'INT', pk:true, ai:true, nn:false, uq:false, def:'' },
+      { name:'nome', type:'VARCHAR(100)', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'descricao', type:'TEXT', pk:false, ai:false, nn:false, uq:false, def:'' },
+      { name:'preco', type:'DECIMAL(10,2)', pk:false, ai:false, nn:true, uq:false, def:'0.00' },
+      { name:'estoque', type:'INT', pk:false, ai:false, nn:true, uq:false, def:'0' },
+      { name:'ativo', type:'BOOLEAN', pk:false, ai:false, nn:true, uq:false, def:'true' },
+    ]
+  },
+  pedido: {
+    name: 'pedidos',
+    cols: [
+      { name:'id', type:'INT', pk:true, ai:true, nn:false, uq:false, def:'' },
+      { name:'usuario_id', type:'INT', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'status', type:'VARCHAR(50)', pk:false, ai:false, nn:true, uq:false, def:"'pendente'" },
+      { name:'total', type:'DECIMAL(10,2)', pk:false, ai:false, nn:true, uq:false, def:'0.00' },
+      { name:'criado_em', type:'DATETIME', pk:false, ai:false, nn:true, uq:false, def:'CURRENT_TIMESTAMP' },
+    ]
+  },
+  categoria: {
+    name: 'categorias',
+    cols: [
+      { name:'id', type:'INT', pk:true, ai:true, nn:false, uq:false, def:'' },
+      { name:'nome', type:'VARCHAR(100)', pk:false, ai:false, nn:true, uq:true, def:'' },
+      { name:'slug', type:'VARCHAR(200)', pk:false, ai:false, nn:true, uq:true, def:'' },
+    ]
+  },
+  endereco: {
+    name: 'enderecos',
+    cols: [
+      { name:'id', type:'INT', pk:true, ai:true, nn:false, uq:false, def:'' },
+      { name:'usuario_id', type:'INT', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'cep', type:'CHAR(8)', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'rua', type:'VARCHAR(200)', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'numero', type:'VARCHAR(20)', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'bairro', type:'VARCHAR(100)', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'cidade', type:'VARCHAR(100)', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'uf', type:'CHAR(2)', pk:false, ai:false, nn:true, uq:false, def:'' },
+    ]
+  },
+  log: {
+    name: 'logs',
+    cols: [
+      { name:'id', type:'BIGINT', pk:true, ai:true, nn:false, uq:false, def:'' },
+      { name:'nivel', type:'VARCHAR(20)', pk:false, ai:false, nn:true, uq:false, def:"'info'" },
+      { name:'mensagem', type:'TEXT', pk:false, ai:false, nn:true, uq:false, def:'' },
+      { name:'criado_em', type:'DATETIME', pk:false, ai:false, nn:true, uq:false, def:'CURRENT_TIMESTAMP' },
+    ]
+  }
+};
+
+function setDialect(d, btn) {
+  dialect = d;
+  document.querySelectorAll('.dialect-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const mysqlOnly = document.querySelectorAll('.mysql-only');
+  mysqlOnly.forEach(el => el.style.display = (d === 'mysql') ? '' : 'none');
+  // update all type selects
+  document.querySelectorAll('.col-type').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = typesByDialect[dialect].map(t => `<option${t===cur?' selected':''}>${t}</option>`).join('');
+  });
+  autoGenerate();
+}
+
+function addColumn(data) {
+  colCount++;
   const div = document.createElement('div');
-  div.classList.add('column');
+  div.classList.add('column-row');
+  div.dataset.id = colCount;
+
+  const types = typesByDialect[dialect].map(t =>
+    `<option${data && data.type === t ? ' selected' : ''}>${t}</option>`
+  ).join('');
 
   div.innerHTML = `
-    <input placeholder="nome da coluna" class="name">
-
-    <select class="type">
-      <option>INT</option>
-      <option>VARCHAR(100)</option>
-      <option>DECIMAL(10,2)</option>
-      <option>TEXT</option>
-      <option>DATE</option>
-      <option>BOOLEAN</option>
-    </select>
-
-    PK <input type="checkbox" class="pk">
-    AI <input type="checkbox" class="ai">
-
-    <div class="hint">💡 ${tips["INT"]}</div>
+    <input type="text" class="col-name" placeholder="nome_coluna" value="${data ? data.name : ''}"
+      oninput="smartSuggest(this); autoGenerate()">
+    <select class="col-type" onchange="autoGenerate()">${types}</select>
+    <div class="col-center"><input type="checkbox" class="col-pk" onchange="autoGenerate()" ${data && data.pk ? 'checked' : ''}></div>
+    <div class="col-center"><input type="checkbox" class="col-ai" onchange="autoGenerate()" ${data && data.ai ? 'checked' : ''}></div>
+    <div class="col-center"><input type="checkbox" class="col-nn" onchange="autoGenerate()" ${data && data.nn ? 'checked' : ''}></div>
+    <div class="col-center"><input type="checkbox" class="col-uq" onchange="autoGenerate()" ${data && data.uq ? 'checked' : ''}></div>
+    <input type="text" class="default-input col-def" placeholder="NULL" value="${data ? data.def : ''}" oninput="autoGenerate()">
+    <button class="del-btn" onclick="removeColumn(this)">×</button>
   `;
 
-  div.querySelector(".type").addEventListener("change", function() {
-    div.querySelector(".hint").innerText = "💡 " + tips[this.value];
-  });
-
   document.getElementById('columns').appendChild(div);
+  if (!data) autoGenerate();
+}
+
+function removeColumn(btn) {
+  btn.closest('.column-row').remove();
+  autoGenerate();
+}
+
+function smartSuggest(input) {
+  const val = input.value.toLowerCase();
+  const row = input.closest('.column-row');
+  const typeSelect = row.querySelector('.col-type');
+  for (const [key, type] of Object.entries(smartTypes)) {
+    if (val.includes(key) || val.startsWith(key)) {
+      if (typesByDialect[dialect].includes(type)) {
+        typeSelect.value = type;
+      }
+      if (val === 'id' || val.endsWith('_id') || val.startsWith('id_')) {
+        row.querySelector('.col-pk').checked = (val === 'id');
+        row.querySelector('.col-ai').checked = (val === 'id');
+      }
+      break;
+    }
+  }
+}
+
+function loadTemplate(name) {
+  const t = templates[name];
+  document.getElementById('tableName').value = t.name;
+  document.getElementById('columns').innerHTML = '';
+  document.getElementById('fkRows').innerHTML = '';
+  colCount = 0;
+  t.cols.forEach(c => addColumn(c));
+  autoGenerate();
+}
+
+let fkCount = 0;
+function addFK() {
+  fkCount++;
+  const div = document.createElement('div');
+  div.classList.add('fk-row');
+  div.innerHTML = `
+    <input type="text" placeholder="coluna local" class="fk-col" oninput="autoGenerate()">
+    <input type="text" placeholder="tabela ref." class="fk-ref-table" oninput="autoGenerate()">
+    <input type="text" placeholder="coluna ref." class="fk-ref-col" oninput="autoGenerate()">
+    <select class="fk-action" onchange="autoGenerate()">
+      <option>CASCADE</option>
+      <option>SET NULL</option>
+      <option>RESTRICT</option>
+      <option>NO ACTION</option>
+    </select>
+    <button class="del-btn" onclick="this.closest('.fk-row').remove(); autoGenerate()">×</button>
+  `;
+  document.getElementById('fkRows').appendChild(div);
+}
+
+function getColumns() {
+  return Array.from(document.querySelectorAll('.column-row')).map(row => ({
+    name: row.querySelector('.col-name').value.trim() || 'coluna',
+    type: row.querySelector('.col-type').value,
+    pk: row.querySelector('.col-pk').checked,
+    ai: row.querySelector('.col-ai').checked,
+    nn: row.querySelector('.col-nn').checked,
+    uq: row.querySelector('.col-uq').checked,
+    def: row.querySelector('.col-def').value.trim(),
+  }));
+}
+
+function getFKs() {
+  return Array.from(document.querySelectorAll('.fk-row')).map(row => ({
+    col: row.querySelector('.fk-col').value.trim(),
+    refTable: row.querySelector('.fk-ref-table').value.trim(),
+    refCol: row.querySelector('.fk-ref-col').value.trim(),
+    action: row.querySelector('.fk-action').value,
+  })).filter(fk => fk.col && fk.refTable && fk.refCol);
 }
 
 function generateSQL() {
-  const table = document.getElementById('tableName').value;
-  const cols = document.querySelectorAll('.column');
+  const table = document.getElementById('tableName').value.trim() || 'minha_tabela';
+  const cols = getColumns();
+  const fks = getFKs();
+  const engine = document.getElementById('tableEngine').value;
+  const charset = document.getElementById('tableCharset').value;
+  const comment = document.getElementById('tableComment').value.trim();
 
-  let sql = `CREATE TABLE ${table} (\n`;
+  validate(cols);
+  updateInsertPanel(cols);
 
-  cols.forEach((col, i) => {
-    const name = col.querySelector('.name').value;
-    const type = col.querySelector('.type').value;
-    const pk = col.querySelector('.pk').checked;
-    const ai = col.querySelector('.ai').checked;
-
-    let line = `  ${name} ${type}`;
-    if (pk) line += " PRIMARY KEY";
-    if (ai) line += " AUTO_INCREMENT";
-    if (i < cols.length - 1) line += ",";
-
-    sql += line + "\n";
-  });
-
-  sql += ");";
-
-  document.getElementById('output').value = sql;
+  // Store for switching tabs
+  window._sqlData = { table, cols, fks, engine, charset, comment };
+  renderOutput();
 }
 
-function showTab(index) {
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', i === index);
+function autoGenerate() {
+  // only if something is set
+  const cols = getColumns();
+  if (cols.length > 0) generateSQL();
+}
+
+function renderOutput() {
+  const { table, cols, fks, engine, charset, comment } = window._sqlData || {};
+  if (!table) return;
+
+  if (currentOutput === 'create') {
+    renderCreate(table, cols, fks, engine, charset, comment);
+    document.getElementById('insertValuesPanel').classList.remove('active');
+  } else if (currentOutput === 'insert') {
+    renderInsert(table, cols);
+    document.getElementById('insertValuesPanel').classList.add('active');
+  } else {
+    renderSelect(table, cols);
+    document.getElementById('insertValuesPanel').classList.remove('active');
+  }
+}
+
+function renderCreate(table, cols, fks, engine, charset, comment) {
+  const lines = [];
+  const pkCols = cols.filter(c => c.pk);
+  const aiSupport = ['mysql','sqlite','sqlserver'].includes(dialect);
+
+  let aiKeyword = { mysql:'AUTO_INCREMENT', postgres:'SERIAL', sqlite:'AUTOINCREMENT', sqlserver:'IDENTITY(1,1)' }[dialect];
+
+  if (dialect === 'mysql') {
+    lines.push(`<span class="sql-comment">-- Criado com SQL Builder PRO MAX ⚡</span>`);
+    lines.push(`<span class="sql-keyword">CREATE TABLE</span> <span class="sql-table">${table}</span> (`);
+  } else if (dialect === 'postgres') {
+    lines.push(`<span class="sql-comment">-- PostgreSQL</span>`);
+    lines.push(`<span class="sql-keyword">CREATE TABLE</span> <span class="sql-table">${table}</span> (`);
+  } else if (dialect === 'sqlite') {
+    lines.push(`<span class="sql-comment">-- SQLite</span>`);
+    lines.push(`<span class="sql-keyword">CREATE TABLE IF NOT EXISTS</span> <span class="sql-table">${table}</span> (`);
+  } else {
+    lines.push(`<span class="sql-comment">-- SQL Server</span>`);
+    lines.push(`<span class="sql-keyword">CREATE TABLE</span> <span class="sql-table">${table}</span> (`);
+  }
+
+  const allLines = [];
+  cols.forEach(c => {
+    let type = c.type;
+    // Adapt types per dialect
+    if (dialect === 'postgres' && c.ai) {
+      type = c.type.includes('BIGINT') ? 'BIGSERIAL' : 'SERIAL';
+    }
+    let line = `  <span class="sql-col">${c.name}</span> <span class="sql-type">${type}</span>`;
+    if (dialect !== 'postgres' && c.ai) line += ` <span class="sql-constraint">${aiKeyword}</span>`;
+    if (dialect === 'sqlserver' && c.ai) line += ` <span class="sql-constraint">IDENTITY(1,1)</span>`;
+    if (c.nn && !c.pk) line += ` <span class="sql-constraint">NOT NULL</span>`;
+    if (c.uq && !c.pk) line += ` <span class="sql-constraint">UNIQUE</span>`;
+    if (c.def !== '') {
+      const defVal = isNaN(c.def) && !c.def.startsWith("'") && c.def !== 'NULL' && c.def !== 'CURRENT_TIMESTAMP' && c.def !== 'true' && c.def !== 'false'
+        ? `'${c.def}'` : c.def;
+      line += ` <span class="sql-keyword">DEFAULT</span> <span class="sql-value">${defVal}</span>`;
+    }
+    if (c.pk && pkCols.length === 1) line += ` <span class="sql-constraint">PRIMARY KEY</span>`;
+    allLines.push(line);
   });
 
-  document.querySelectorAll('.content').forEach((c, i) => {
-    c.classList.toggle('active', i === index);
+  // Composite PK
+  if (pkCols.length > 1) {
+    allLines.push(`  <span class="sql-constraint">PRIMARY KEY</span> (${pkCols.map(c => `<span class="sql-col">${c.name}</span>`).join(', ')})`);
+  }
+
+  // FKs
+  fks.forEach((fk, i) => {
+    allLines.push(`  <span class="sql-constraint">FOREIGN KEY</span> (<span class="sql-col">${fk.col}</span>) <span class="sql-keyword">REFERENCES</span> <span class="sql-table">${fk.refTable}</span>(<span class="sql-col">${fk.refCol}</span>) <span class="sql-keyword">ON DELETE</span> <span class="sql-constraint">${fk.action}</span>`);
+  });
+
+  allLines.forEach((l, i) => {
+    lines.push(l + (i < allLines.length - 1 ? ',' : ''));
+  });
+
+  if (dialect === 'mysql') {
+    let ending = `)`;
+    ending += ` <span class="sql-keyword">ENGINE</span>=<span class="sql-value">${engine}</span>`;
+    ending += ` <span class="sql-keyword">DEFAULT CHARSET</span>=<span class="sql-value">${charset}</span>`;
+    ending += ` <span class="sql-keyword">COLLATE</span>=<span class="sql-value">${charset}_unicode_ci</span>`;
+    if (comment) ending += ` <span class="sql-keyword">COMMENT</span>=<span class="sql-string">'${comment}'</span>`;
+    ending += `;`;
+    lines.push(ending);
+  } else {
+    lines.push(`);`);
+  }
+
+  document.getElementById('sqlOutput').innerHTML = lines.join('\n');
+}
+
+function updateInsertPanel(cols) {
+  const panel = document.getElementById('insertFields');
+  const existing = {};
+  panel.querySelectorAll('.insert-field').forEach(f => {
+    const lbl = f.querySelector('label');
+    const inp = f.querySelector('input');
+    if (lbl && inp) existing[lbl.textContent] = inp.value;
+  });
+
+  panel.innerHTML = '';
+  cols.filter(c => !c.ai).forEach(c => {
+    const div = document.createElement('div');
+    div.classList.add('insert-field');
+    div.innerHTML = `
+      <label>${c.name}</label>
+      <input type="text" class="insert-val" data-col="${c.name}" data-type="${c.type}"
+        placeholder="${getInsertPlaceholder(c.type)}"
+        value="${existing[c.name] || ''}"
+        oninput="rerenderInsert()">
+      <span class="type-badge">${c.type}</span>
+    `;
+    panel.appendChild(div);
   });
 }
 
-addColumn();
+function getInsertPlaceholder(type) {
+  if (type.includes('INT') || type.includes('DECIMAL') || type.includes('FLOAT') || type.includes('DOUBLE') || type.includes('NUMERIC') || type.includes('REAL')) return '0';
+  if (type === 'BOOLEAN' || type === 'BIT' || type === 'TINYINT(1)') return 'true';
+  if (type.includes('DATE')) return '2026-01-01';
+  return 'valor';
+}
 
+function getInsertValue(val, type) {
+  if (val === '') {
+    if (type.includes('INT') || type.includes('DECIMAL') || type.includes('FLOAT') || type.includes('NUMERIC') || type.includes('REAL')) return '0';
+    if (type === 'BOOLEAN' || type === 'BIT' || type === 'TINYINT(1)') return 'true';
+    if (type.includes('DATE')) return "'2026-01-01'";
+    return "'valor'";
+  }
+  if (!isNaN(val)) return val;
+  if (val === 'true' || val === 'false' || val === 'NULL' || val === 'CURRENT_TIMESTAMP') return val;
+  return `'${val}'`;
+}
+
+function rerenderInsert() {
+  if (window._sqlData) renderInsert(window._sqlData.table, window._sqlData.cols);
+}
+
+function renderInsert(table, cols) {
+  const nonAI = cols.filter(c => !c.ai);
+  const fields = document.querySelectorAll('.insert-val');
+  const values = Array.from(fields).map(inp => getInsertValue(inp.value, inp.dataset.type));
+  const colNames = nonAI.map(c => `<span class="sql-col">${c.name}</span>`).join(', ');
+  const valStrs = values.length > 0
+    ? values.map(v => isNaN(v.replace(/'/g,'')) || v.includes("'") ? `<span class="sql-string">${v}</span>` : `<span class="sql-number">${v}</span>`).join(', ')
+    : nonAI.map(c => `<span class="sql-string">'valor'</span>`).join(', ');
+
+  const html = [
+    `<span class="sql-comment">-- Inserir registro em ${table}</span>`,
+    `<span class="sql-keyword">INSERT INTO</span> <span class="sql-table">${table}</span> (${colNames})`,
+    `<span class="sql-keyword">VALUES</span> (${valStrs});`,
+  ].join('\n');
+
+  document.getElementById('sqlOutput').innerHTML = html;
+}
+
+function renderSelect(table, cols) {
+  const colNames = cols.map(c => `  <span class="sql-col">${c.name}</span>`).join(',\n');
+  const html = [
+    `<span class="sql-comment">-- Buscar todos os registros</span>`,
+    `<span class="sql-keyword">SELECT</span>`,
+    colNames,
+    `<span class="sql-keyword">FROM</span> <span class="sql-table">${table}</span>`,
+    `<span class="sql-keyword">WHERE</span> <span class="sql-col">id</span> = <span class="sql-number">1</span>`,
+    `<span class="sql-keyword">ORDER BY</span> <span class="sql-col">id</span> <span class="sql-keyword">DESC</span>`,
+    `<span class="sql-keyword">LIMIT</span> <span class="sql-number">10</span>;`,
+  ].join('\n');
+  document.getElementById('sqlOutput').innerHTML = html;
+}
+
+function switchOutput(mode, btn) {
+  currentOutput = mode;
+  document.querySelectorAll('.output-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderOutput();
+}
+
+function validate(cols) {
+  const bar = document.getElementById('validationBar');
+  bar.innerHTML = '';
+  const msgs = [];
+  const hasPK = cols.some(c => c.pk);
+  if (!hasPK) msgs.push({ type:'warn', text:'⚠ Nenhuma PRIMARY KEY definida' });
+  else msgs.push({ type:'ok', text:'✓ PRIMARY KEY ok' });
+  const aiWithoutPK = cols.some(c => c.ai && !c.pk);
+  if (aiWithoutPK) msgs.push({ type:'warn', text:'⚠ AUTO_INCREMENT sem PK' });
+  const emptyNames = cols.some(c => !c.name || c.name === 'coluna');
+  if (emptyNames) msgs.push({ type:'warn', text:'⚠ Coluna sem nome' });
+
+  msgs.forEach(m => {
+    const el = document.createElement('div');
+    el.className = `validation-msg ${m.type}`;
+    el.textContent = m.text;
+    bar.appendChild(el);
+  });
+}
+
+function getRawSQL() {
+  const { table, cols, fks, engine, charset, comment } = window._sqlData || {};
+  if (!table) return '';
+  const pkCols = cols.filter(c => c.pk);
+  const aiKeyword = { mysql:'AUTO_INCREMENT', postgres:'SERIAL', sqlite:'AUTOINCREMENT', sqlserver:'IDENTITY(1,1)' }[dialect];
+  const allLines = [];
+  cols.forEach(c => {
+    let type = c.type;
+    if (dialect === 'postgres' && c.ai) type = c.type.includes('BIGINT') ? 'BIGSERIAL' : 'SERIAL';
+    let line = `  ${c.name} ${type}`;
+    if (dialect !== 'postgres' && c.ai) line += ` ${aiKeyword}`;
+    if (c.nn && !c.pk) line += ` NOT NULL`;
+    if (c.uq && !c.pk) line += ` UNIQUE`;
+    if (c.def !== '') {
+      const defVal = isNaN(c.def) && !c.def.startsWith("'") && !['NULL','CURRENT_TIMESTAMP','true','false'].includes(c.def) ? `'${c.def}'` : c.def;
+      line += ` DEFAULT ${defVal}`;
+    }
+    if (c.pk && pkCols.length === 1) line += ` PRIMARY KEY`;
+    allLines.push(line);
+  });
+  if (pkCols.length > 1) allLines.push(`  PRIMARY KEY (${pkCols.map(c=>c.name).join(', ')})`);
+  fks.forEach(fk => allLines.push(`  FOREIGN KEY (${fk.col}) REFERENCES ${fk.refTable}(${fk.refCol}) ON DELETE ${fk.action}`));
+
+  let sql = `-- Criado com SQL Builder PRO MAX ⚡\n`;
+  sql += dialect === 'sqlite' ? `CREATE TABLE IF NOT EXISTS ${table} (\n` : `CREATE TABLE ${table} (\n`;
+  sql += allLines.join(',\n') + '\n)';
+  if (dialect === 'mysql') {
+    sql += ` ENGINE=${engine} DEFAULT CHARSET=${charset} COLLATE=${charset}_unicode_ci`;
+    if (comment) sql += ` COMMENT='${comment}'`;
+  }
+  sql += ';';
+
+  // Add INSERT
+  const nonAI = cols.filter(c => !c.ai);
+  const fields = document.querySelectorAll('.insert-val');
+  const vals = Array.from(fields).map(inp => getInsertValue(inp.value, inp.dataset.type));
+  if (nonAI.length > 0) {
+    const insertVals = vals.length === nonAI.length ? vals : nonAI.map(c => getInsertValue('', c.type));
+    sql += `\n\nINSERT INTO ${table} (${nonAI.map(c=>c.name).join(', ')})\nVALUES (${insertVals.join(', ')});`;
+  }
+
+  return sql;
+}
+
+function copySQL() {
+  const raw = getRawSQL();
+  if (!raw) { showToast('Gere o SQL primeiro!', '#f87171'); return; }
+  navigator.clipboard.writeText(raw).then(() => showToast('✓ SQL copiado!'));
+}
+
+function downloadSQL() {
+  const raw = getRawSQL();
+  if (!raw) { showToast('Gere o SQL primeiro!', '#f87171'); return; }
+  const blob = new Blob([raw], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${(window._sqlData?.table || 'tabela')}.sql`;
+  a.click();
+  showToast('✓ Download iniciado!');
+}
+
+function showToast(msg, color) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = color || 'var(--green)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function showGuide(index, btn) {
+  document.querySelectorAll('.guide-tab').forEach((t,i) => t.classList.toggle('active', i===index));
+  document.querySelectorAll('.guide-content').forEach((c,i) => c.classList.toggle('active', i===index));
+}
+
+// Init
+addColumn({ name:'id', type:'INT', pk:true, ai:true, nn:false, uq:false, def:'' });
+addColumn({ name:'nome', type:'VARCHAR(100)', pk:false, ai:false, nn:true, uq:false, def:'' });
+document.getElementById('tableName').value = 'usuarios';
+generateSQL();
 </script>
-
 </body>
 </html>
-
